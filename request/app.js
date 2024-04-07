@@ -22,18 +22,23 @@ app.get("/", (req, res) => {
         />
         <link rel="stylesheet" href="/main.css" />
         <script src="/htmx.js" defer></script>
+        <script src="/htmx-response-targets.js" defer></script>
+
       </head>
       <body>
         <main>
-          <form 
+          <form
+            hx-ext="response-targets"
             hx-post="/login"
             hx-headers='{"x-csrf-token" : "abc"}'
-            hx-target="#extra-information"
+            hx-target-422="#extra-information"
+            hx-target-500="#server-side-error"
             hx-sync="this:replace"
           >
             <div>
               <img src="/images/auth-icon.jpg" alt="A lock icon" />
             </div>
+            <div id="server-side-error"></div>
             <div class="control">
               <label for="email">Email</label>
               <input 
@@ -71,7 +76,10 @@ app.get("/", (req, res) => {
   `);
 });
 
-app.post("/validate", (req, res) => {
+app.post("/validate", async (req, res) => {
+  await new Promise((resolve) => {
+    setTimeout(resolve, 2000);
+  });
   if ("email" in req.body && !req.body.email.includes("@")) {
     return res.send(`
       E-Mail address is invalid.
@@ -103,7 +111,7 @@ app.post("/login", (req, res) => {
   }
 
   if (Object.keys(errors).length > 0) {
-    return res.send(`
+    return res.status(422).send(`
         <ul id="form-errors">
           ${Object.keys(errors)
             .map((key) => `<li>${errors[key]}</li>`)
@@ -111,6 +119,16 @@ app.post("/login", (req, res) => {
         </ul>
     `);
   }
+
+  if (Math.random() > 0) {
+    res.setHeader("HX-Reswap", "beforebegin");
+    return res.status(500).send(`
+      <p class="error">
+        Your email or password is incorrect.
+      </p>
+    `);
+  }
+  res.setHeader("HX-Redirect", "/authenticated");
   res.send();
 });
 
