@@ -1,13 +1,13 @@
-import express from 'express';
+import express from "express";
 
-import PRODUCTS from './products.js';
+import PRODUCTS from "./products.js";
 
 const app = express();
 
-app.use(express.static('public'));
-app.use(express.urlencoded({ extended: false })); 
+app.use(express.static("public"));
+app.use(express.urlencoded({ extended: false }));
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>
     <html>
@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
         <link rel="stylesheet" href="/main.css">
         <script src="/htmx.js" defer></script>
       </head>
-      <body>
+      <body hx-boost="true">
         <header id="main-header">
           <div id="main-title">
             <a href="/">
@@ -41,7 +41,7 @@ app.get('/', (req, res) => {
                 </a>
               </article>
             `
-            ).join('')}
+            ).join("")}
           </ul>
         </main>
       </body>
@@ -49,7 +49,7 @@ app.get('/', (req, res) => {
   `);
 });
 
-app.get('/products/:id', (req, res) => {
+app.get("/products/:id", (req, res) => {
   const product = PRODUCTS.find((product) => product.id === req.params.id);
 
   res.send(`
@@ -60,7 +60,7 @@ app.get('/products/:id', (req, res) => {
         <link rel="stylesheet" href="/main.css">
         <script src="/htmx.js" defer></script>
       </head>
-      <body>
+      <body hx-boost="true">
         <header id="main-header">
           <div id="main-title">
             <a href="/">
@@ -75,7 +75,7 @@ app.get('/products/:id', (req, res) => {
             <div>
               <h1>${product.title}</h1>
               <p id="product-price">$${product.price}</p>
-              <form method="post" action="/cart">
+              <form method="post" action="/cart" >
                 <button>Add to Cart</button>
               </form>
             </div>
@@ -85,6 +85,10 @@ app.get('/products/:id', (req, res) => {
       </body>
     </html>
   `);
+});
+
+app.post("/cart", (req, res) => {
+  res.redirect("/");
 });
 
 app.listen(3000);
