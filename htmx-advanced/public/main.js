@@ -1,7 +1,12 @@
 function showConfirmationModal(event) {
+  if (event.detail.path === "/suggested-locations") {
+    return;
+  }
+
   event.preventDefault();
   console.log(event);
   const action = event.detail.elt.dataset.action;
+
   const confirmationModal = `
          <dialog class="modal">
     <div id="confirmation">
