@@ -1,6 +1,10 @@
-import renderLocation from './components/location.js';
+import renderLocation from "./components/location.js";
 
-export default function renderLocationsPage(availableLocations, interestingLocations) {
+export default function renderLocationsPage(
+  suggestedLocations,
+  availableLocations,
+  interestingLocations
+) {
   return `
     <!DOCTYPE html>
     <html>
@@ -9,6 +13,7 @@ export default function renderLocationsPage(availableLocations, interestingLocat
         <link rel="stylesheet" href="/main.css" />
         <link rel="icon" href="/logo.png" />
         <script src="/htmx.js" defer></script>
+        <script src="/main.js" defer></script>
       </head>
       <body>
         <header>
@@ -20,17 +25,29 @@ export default function renderLocationsPage(availableLocations, interestingLocat
           </p>
         </header>
         <main>
-          <section class="locations-category">
+        <section id="suggested-locations-section" class="locations-category">
+          <h2>Suggested Locations</h2>
+          <ul class="locations" id="suggested-locations">
+             ${suggestedLocations
+               .map((location) => renderLocation(location))
+               .join("")}
+          </ul>
+        </section>
+          <section class="locations-category" id="int-locations-section">
             <h2>My Dream Locations</h2>
             <ul id="interesting-locations" class="locations">
-              ${interestingLocations.map((location) => renderLocation(location, false)).join('')}
+              ${interestingLocations
+                .map((location) => renderLocation(location, false))
+                .join("")}
             </ul>
           </section>
 
           <section class="locations-category">
             <h2>Available Locations</h2>
             <ul id="available-locations" class="locations">
-              ${availableLocations.map((location) => renderLocation(location)).join('')}
+              ${availableLocations
+                .map((location) => renderLocation(location))
+                .join("")}
             </ul>
           </section>
         </main>
