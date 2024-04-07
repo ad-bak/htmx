@@ -121,7 +121,6 @@ app.post("/login", (req, res) => {
   }
 
   if (Math.random() > 0) {
-    res.setHeader("HX-Reswap", "beforebegin");
     return res.status(500).send(`
       <p class="error">
         Your email or password is incorrect.
