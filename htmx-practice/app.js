@@ -22,8 +22,11 @@ app.get("/", (req, res) => {
       <main>
         <h1>Manage your course goals</h1>
         <section>
-          <form id="goal-form" hx-post="/add-goal" hx-target="#goals" hx-swap="beforeend" >
-          
+          <form 
+            id="goal-form" 
+            hx-post="/goals" 
+            hx-target="#goals"
+            hx-swap="beforeend">
             <div>
               <label htmlFor="goal">Goal</label>
               <input type="text" id="goal" name="goal" />
@@ -35,10 +38,17 @@ app.get("/", (req, res) => {
           <ul id="goals">
           ${courseGoals
             .map(
-              (goal, index) => `
-            <li id="goal-${index}">
-              <span>${goal}</span>
-              <button>Remove</button>
+              (goal) => `
+            <li id="goal-${goal.id}">
+            <span>${goal.text}</span>
+            <button 
+                hx-target="#goal-${goal.id}" 
+                hx-delete="/goals/${goal.id}"
+                hx-swap="outerHTML"
+
+              >
+                Remove
+              </button>
             </li>
           `
             )
@@ -51,17 +61,30 @@ app.get("/", (req, res) => {
   `);
 });
 
-app.post("/add-goal", (req, res) => {
-  const enteredGoal = req.body.goal;
-  courseGoals.push(enteredGoal);
-
+app.post("/goals", (req, res) => {
+  const goalText = req.body.goal;
+  const id = Math.floor(Math.random() * 1000).toString();
+  courseGoals.push({ text: goalText, id: id });
+  // res.redirect('/');
   res.send(`
-  
-      <li id="goal-${courseGoals.length - 1}">
-        <span>${enteredGoal}</span>
-        <button>Remove</button>
-      </li>
-    `);
+    <li id="goal-${id}">
+      <span>${goalText}</span>
+      <button
+      hx-target="#goal-${id}" 
+      hx-delete="/goals/${id}"
+      hx-swap="outerHTML"
+      >Remove</button>
+    </li>
+  `);
+});
+
+app.delete("/goals/:id", (req, res) => {
+  const id = req.params.id;
+  const index = courseGoals.findIndex((goal) => goal.id === id);
+
+  courseGoals.splice(index, 1);
+
+  res.send();
 });
 
 app.listen(3000);
